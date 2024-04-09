@@ -198,7 +198,18 @@ class JobRunner:
         self.full_job_request = job_request
         try:
             docker_run_options = RunConfigManager.preset_to_docker_run_args(job_request.docker_run_options_preset)
+            docker_run_options.append('-d')
+            docker_run_options.append('2')
+        try:
             await self.unpack_volume(job_request)
+        except JobError as ex:
+            return JobResult(
+                success=False,
+                exit_status=None,
+                timeout=False,
+                stdout=ex.description,
+                stderr="",
+        )    
         except JobError as ex:
             return JobResult(
                 success=False,
